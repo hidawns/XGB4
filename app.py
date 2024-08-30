@@ -30,8 +30,8 @@ df['Fee_category'] = df['Fees'].apply(category)
 df['Experience'] = np.sqrt(df['Experience'])
 
 # Manual encoding of categorical variables
-place_mapping = {'Bangalore': 0, 'Mumbai': 1, 'Delhi': 2, 'Hyderabad': 3, 'Chennai': 4, 
-                 'Coimbatore': 5, 'Ernakulam': 6, 'Thiruvananthapuram': 7, 'Other': 8}
+place_mapping = {'Bangalore': 0, 'Mumbai': 6, 'Delhi': 3, 'Hyderabad': 5, 'Chennai': 1, 
+                 'Coimbatore':2, 'Ernakulam': 4, 'Thiruvananthapuram': 7, 'Unknown': 8}
 profile_mapping = {'Ayurveda': 0, 'Dentist': 1, 'Dermatologist': 2, 'ENT Specialist': 3, 
                    'General Medicine': 4, 'Homeopath': 5}
 fee_category_mapping = {'0-100': 0, '100-250': 1, '250-400': 2, '400-600': 3, 
