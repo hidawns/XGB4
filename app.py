@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from xgboost import XGBRegressor
 
@@ -29,17 +29,14 @@ df['Fee_category'] = df['Fees'].apply(category)
 # Handle skewness in 'Experience'
 df['Experience'] = np.sqrt(df['Experience'])
 
-# Manual encoding of categorical variables
-place_mapping = {'Bangalore': 0, 'Mumbai': 6, 'Delhi': 3, 'Hyderabad': 5, 'Chennai': 1, 
-                 'Coimbatore':2, 'Ernakulam': 4, 'Thiruvananthapuram': 7, 'Unknown': 8}
-profile_mapping = {'Ayurveda': 0, 'Dentist': 1, 'Dermatologist': 2, 'ENT Specialist': 3, 
-                   'General Medicine': 4, 'Homeopath': 5}
-fee_category_mapping = {'0-100': 0, '100-250': 1, '250-400': 2, '400-600': 3, 
-                        '600-800': 4, '800-950': 5}
+# Encoding categorical variables using LabelEncoder
+label_encoders = {}
+categorical_cols = ['Place', 'Profile', 'Fee_category']
 
-df['Place'] = df['Place'].map(place_mapping)
-df['Profile'] = df['Profile'].map(profile_mapping)
-df['Fee_category'] = df['Fee_category'].map(fee_category_mapping)
+for col in categorical_cols:
+    le = LabelEncoder()
+    df[col] = le.fit_transform(df[col])
+    label_encoders[col] = le
 
 # Scaling
 scaler = MinMaxScaler()
@@ -64,16 +61,16 @@ st.title("Doctor Fee Prediction App")
 # User inputs
 experience = st.number_input("Years of Experience", min_value=0, max_value=66, value=0, step=1)
 rating = st.number_input("Doctor Rating", min_value=1, max_value=100, value=50, step=1)
-place = st.selectbox("Place", list(place_mapping.keys()))
-profile = st.selectbox("Doctor Specialization", list(profile_mapping.keys()))
+place = st.selectbox("Place", label_encoders['Place'].classes_)
+profile = st.selectbox("Doctor Specialization", label_encoders['Profile'].classes_)
 miscellaneous_info = st.selectbox("Miscellaneous Info Existent", ["Not Present", "Present"])
 num_of_qualifications = st.number_input("Number of Qualifications", min_value=1, max_value=10, value=1, step=1)
 
 # Prediction button
 if st.button("Predict"):
-    # Encoding user input
-    place_encoded = place_mapping[place]
-    profile_encoded = profile_mapping[profile]
+    # Encoding user input using LabelEncoder
+    place_encoded = label_encoders['Place'].transform([place])[0]
+    profile_encoded = label_encoders['Profile'].transform([profile])[0]
     misc_info_encoded = 1 if miscellaneous_info == 'Present' else 0
 
     # Prepare input for prediction
