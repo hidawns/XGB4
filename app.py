@@ -7,7 +7,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from xgboost import XGBRegressor
 
 # Load and preprocess the dataset
-df = pd.read_excel("cleandata.xlsx")
+df = pd.read_excel("xgb3_preprocess1.xlsx")
 
 # Create a 'Fee_category' column
 def category(x):
